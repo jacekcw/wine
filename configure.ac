@@ -112,6 +112,7 @@ AC_ARG_WITH(zlib,      AS_HELP_STRING([--without-zlib],[do not use Zlib (data co
 
 AC_ARG_WITH(wine-tools,AS_HELP_STRING([--with-wine-tools=DIR],[use Wine tools from directory DIR]))
 AC_ARG_WITH(wine64,    AS_HELP_STRING([--with-wine64=DIR],[use the 64-bit Wine in DIR for a Wow64 build]))
+AC_ARG_WITH(libdir32,  AS_HELP_STRING([--with-libdir32=DIR],[use DIR to find 32-bit libraries]))
 
 AC_CANONICAL_HOST
 
@@ -241,6 +242,16 @@ You should create a separate build directory and run configure from there.])
 elif test "x$enable_win64" = "xyes"
 then
     test "x$libdir" != "x\${exec_prefix}/lib" || libdir="\${exec_prefix}/lib64"
+fi
+
+if test -n "$with_libdir32"
+then
+    if test "x$enable_win64" = "xyes"
+    then
+        AC_SUBST(libdir32,"$with_libdir32")
+    else
+        WINE_WARNING([--with-libdir32 ignored in 32-bit builds. Use --libdir instead.])
+    fi
 fi
 
 AC_CACHE_CHECK([for the directory containing the Wine tools], wine_cv_toolsdir,

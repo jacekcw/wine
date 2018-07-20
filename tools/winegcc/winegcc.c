@@ -446,9 +446,12 @@ static int check_platform( struct options *opts, const char *file )
 
 static char *get_lib_dir( struct options *opts )
 {
-    static const char *stdlibpath[] = { LIBDIR, "/usr/lib", "/usr/local/lib", "/lib" };
+    const char *stdlibpath[] = { LIBDIR, "/usr/lib", "/usr/local/lib", "/lib" };
     static const char libwine[] = "/libwine.so";
     unsigned int i;
+
+    if (opts->target_cpu != CPU_x86_64 && opts->target_cpu != CPU_ARM64 && *LIBDIR32)
+        stdlibpath[0] = LIBDIR32;
 
     for (i = 0; i < sizeof(stdlibpath)/sizeof(stdlibpath[0]); i++)
     {

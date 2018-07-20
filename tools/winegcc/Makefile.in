@@ -11,6 +11,7 @@ C_SRCS = \
 winegcc_EXTRADEFS = \
 	-DINCLUDEDIR="\"${includedir}/wine\"" \
 	-DLIBDIR="\"${libdir}\"" \
+	-DLIBDIR32="\"${libdir32}\"" \
 	-DCC="\"$(CC)\"" \
 	-DCPP="\"$(CPPBIN)\"" \
 	-DCXX="\"$(CXX)\"" \
