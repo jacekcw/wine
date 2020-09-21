@@ -3750,6 +3750,24 @@ static NTSTATUS get_basic_memory_info( HANDLE process, LPCVOID addr,
         }
     }
 
+    if (!ptr)
+    {
+        Dl_info info;
+        NTSTATUS status;
+
+        if(dladdr(addr, &info))
+        {
+            FIXME("native lib %p %s\n", addr, debugstr_a(info.dli_sname));
+            status = create_view( &view, base, 4096, SEC_FILE | VPROT_SYSTEM | VPROT_COMMITTED | VPROT_READ | VPROT_EXEC );
+            if (!status)
+            {
+                alloc_base = base;
+                alloc_end = base + 4096;
+                ptr = &view->entry;
+            }
+        }
+    }
+
     /* Fill the info structure */
 
     info->AllocationBase = alloc_base;
