@@ -1101,6 +1101,20 @@ static int init_socket( struct sock *sock, int family, int type, int protocol, u
             set_dont_fragment( sockfd, unix_family == AF_INET6 ? IPPROTO_IPV6 : IPPROTO_IP, TRUE );
     }
 
+    /*
+     * HACK: msvsmon spawns a new server every time existing server accepts a connection.
+     * The original server never closes the handle nor sets SO_REUSEADDR, only the new one
+     * one sets it. This is enough for the new server to take over on Windows. We always
+     * set SO_REUSEPORT, which has close enough effect.
+     */
+#ifdef SO_REUSEPORT
+    if (unix_family == AF_INET || unix_family == AF_INET6)
+    {
+        static const int enable = 1;
+        setsockopt( sockfd, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(enable) );
+    }
+#endif
+
 #ifdef IPV6_V6ONLY
     if (unix_family == AF_INET6)
     {
