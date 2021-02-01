@@ -27,7 +27,7 @@
 @ stub CsrProbeForWrite
 @ stub CsrSetPriorityClass
 @ stub CsrpProcessCallbackRequest
-@ stdcall DbgBreakPoint()
+@ stdcall -norelay DbgBreakPoint()
 @ varargs DbgPrint(str)
 @ varargs DbgPrintEx(long long str)
 # @ stub DbgPrintReturnControlC
