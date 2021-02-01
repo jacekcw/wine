@@ -2142,12 +2142,30 @@ static void quit_handler( int signal, siginfo_t *siginfo, void *sigcontext )
  */
 static void usr1_handler( int signal, siginfo_t *siginfo, void *sigcontext )
 {
-    struct xcontext xcontext;
+    struct syscall_frame *frame = x86_thread_data()->syscall_frame;
+    if (frame)
+    {
+        CONTEXT context;
+        context.ContextFlags = CONTEXT_FULL;
+        NtGetContextThread( GetCurrentThread(), &context );
 
-    init_handler( sigcontext );
-    save_context( &xcontext, sigcontext );
-    wait_suspend( &xcontext.c );
-    restore_context( &xcontext, sigcontext );
+        wait_suspend( &context );
+
+        frame->edi = context.Edi;
+        frame->esi = context.Esi;
+        frame->ebx = context.Ebx;
+        frame->ebp = context.Ebp;
+        frame->thunk_addr = context.Eip;
+    }
+    else
+    {
+        struct xcontext xcontext;
+
+        init_handler( sigcontext );
+        save_context( &xcontext, sigcontext );
+        wait_suspend( &xcontext.c );
+        restore_context( &xcontext, sigcontext );
+    }
 }
 
 
